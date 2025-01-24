@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вариант 16</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="block1">
+            <div id="blockX" class="blockX">Дізнатися більше про новинки та акції!</div>
+        </div>
+        <div class="block2">
+          <ul>
+            <li><a href="catalog.html">Каталог</a></li>
+            <li><a href="offers.html">Спеціальні пропозиції</a></li>
+            <li><a href="about.html">Про нас</a></li>
+            <li><a href="contacts.html">Контакти</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="block3">
+            <p>Ми пропонуємо широкий асортимент музичних інструментів та обладнання. Гітари, клавішні, ударні установки, звукове обладнання та багато іншого чекають на вас!
+    Шукаєте щось особливе? Загляньте до нашого каталогу або скористайтеся фільтрами пошуку для зручного вибору.</p>
+            <div id="parallelogramResult"></div>
+            <form id="wordCountForm">
+                <textarea id="textInput" placeholder="Введите текст"></textarea>
+                <button type="button" onclick="countWords()">Подсчитать слова</button>
+            </form>
+        </div>
+        <div class="block4">
+            <div id="blockY" class="blockY">Магазин музичних товарів</div>
+        </div>
+        <div class="block5">
+            <p>Контент 5</p>
+        </div>
+    </div>
+
+    <script>
+        if (!localStorage.getItem('contentSwapped')) {
+            document.getElementById('blockX').innerText = "Магазин музичних товарів";
+            document.getElementById('blockY').innerText = "Дізнатися більше про новинки та акції!";
+            localStorage.setItem('contentSwapped', 'true');
+        }
+
+        function calculateParallelogramArea(base, height) {
+            const area = base * height;
+            document.getElementById('parallelogramResult').innerText = `Площа паралелограма: ${area}`;
+        }
+        calculateParallelogramArea(10, 5);
+
+        function countWords() {
+            const text = document.getElementById('textInput').value;
+            const wordCount = text.trim().split(/\s+/).length;
+            alert(`Количество слов: ${wordCount}`);
+            document.cookie = `wordCount=${wordCount}; path=/`;
+        }
+
+        window.onload = function () {
+            const cookies = document.cookie.split('; ').find(row => row.startsWith('wordCount='));
+            if (cookies) {
+                const wordCount = cookies.split('=')[1];
+                if (confirm(`Восстановлено из cookies: ${wordCount} слов. Нажмите ОК для удаления данных.`)) {
+                    document.cookie = `wordCount=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+                    alert('Cookies удалены. Перезагрузка страницы.');
+                    location.reload();
+                }
+                document.getElementById('wordCountForm').classList.add('hidden');
+            }
+        };
+
+        document.querySelector('.block2').addEventListener('mouseout', () => {
+            if (!localStorage.getItem('backgroundColorChanged')) {
+                const color = prompt('Введите цвет для фона блока 2:');
+                if (color) {
+                    document.querySelector('.block2').style.backgroundColor = color;
+                    localStorage.setItem('block2BackgroundColor', color);
+                    localStorage.setItem('backgroundColorChanged', 'true');
+                }
+            }
+        });
+
+        const savedColor = localStorage.getItem('block2BackgroundColor');
+        if (savedColor) {
+            document.querySelector('.block2').style.backgroundColor = savedColor;
+        }
+
+        document.getElementById('wordCountForm').insertAdjacentHTML('afterend', `
+            <ol>
+                <li onclick="addBackgroundForm(1)">Блок 1</li>
+                <li onclick="addBackgroundForm(2)">Блок 2</li>
+                <li onclick="addBackgroundForm(3)">Блок 3</li>
+                <li onclick="addBackgroundForm(4)">Блок 4</li>
+                <li onclick="addBackgroundForm(5)">Блок 5</li>
+            </ol>
+        `);
+
+        function addBackgroundForm(blockNumber) {
+            const block = document.querySelector(`.block${blockNumber}`);
+            if (!block || !block.innerText.trim()) return;
+
+            block.innerHTML += `
+                <div>
+                    <input type="text" placeholder="URL изображения" id="backgroundInput${blockNumber}">
+                    <button onclick="saveBackground(${blockNumber})">Сохранить фон</button>
+                    <button onclick="removeBackground(${blockNumber})">Удалить фон</button>
+                </div>
+            `;
+        }
+
+        function saveBackground(blockNumber) {
+            const url = document.getElementById(`backgroundInput${blockNumber}`).value;
+            const block = document.querySelector(`.block${blockNumber}`);
+            if (url) {
+                block.style.backgroundImage = `url(${url})`;
+                localStorage.setItem(`block${blockNumber}Background`, url);
+            }
+        }
+
+        function removeBackground(blockNumber) {
+            const block = document.querySelector(`.block${blockNumber}`);
+            block.style.backgroundImage = '';
+            localStorage.removeItem(`block${blockNumber}Background`);
+        }
+
+        for (let i = 1; i <= 5; i++) {
+            const savedBackground = localStorage.getItem(`block${i}Background`);
+            if (savedBackground) {
+                document.querySelector(`.block${i}`).style.backgroundImage = `url(${savedBackground})`;
+            }
+        }
+    </script>
+</body>
+</html>
